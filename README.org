@@ -4,6 +4,10 @@ This is a simple Go implementation of NRPE protocol, where you can receive and
 respond `check_nrpe` calls, in other words, Nagios passive check calls using your
 own Go daemon.
 
+** =CGo= Based
+By using =CGo= based implementation we can have the same data struct sent by
+=check_nrpe= on the Go side, and then transformed into a pure Go struct.
+
 ** Usage
 First of all have the source code on your development machine, by using:
 
@@ -20,22 +24,20 @@ type of packets on the network level, so consider this basic example using Go's
 package main
 
 import (
-    "net"
-    "log"
     "github.com/otaviof/gonrpe"
+    "log"
+    "net"
 )
 
 func main() {
-    var (
-        listener   net.Listener
-        conn       net.Conn
-        buf        []byte
-        n          int
-        err        error
-        pkt        *gonrpe.NrpePacket
-        cmd        string
-        args       []string
-    )
+    var listener net.Listener
+    var conn net.Conn
+    var buf []byte
+    var n int
+    var err error
+    var pkt *gonrpe.NrpePacket
+    var cmd string
+    var args []string
 
     listener, _ = net.Listen("tcp", "0.0.0.0:5666")
 
@@ -68,9 +70,16 @@ func main() {
 }
 #+END_SRC
 
-** Contribute
-Please fork this project and have a look on the tests suite, for example:
+*** Limitations
+This project is not yet tested on production environments, nor part of a more
+feature rich project like employing SSL based connection, so feel free to report
+bugs and let me know the outcomes of your attempts.
 
-#+BEGIN_EXAMPLE shell
-go test -v
+** Contributing
+Fork this project and have a look on the tests suite, for example:
+
+#+BEGIN_EXAMPLE sh
+go test -v github.com/otaviof/gonrpe
 #+END_EXAMPLE
+
+When you're done, please send pull-request. Thanks!
