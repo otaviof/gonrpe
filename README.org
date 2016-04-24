@@ -1,4 +1,4 @@
-* `gonrpe` Go Adapter for NRPE Protocol
+* =gonrpe= Go Adapter for NRPE Protocol
 ** Abstract
 This is a simple Go implementation of NRPE protocol, where you can receive and
 respond `check_nrpe` calls, in other words, Nagios passive check calls using your
