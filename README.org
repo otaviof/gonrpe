@@ -18,50 +18,53 @@ type of packets on the network level, so consider this basic example using Go's
 
 #+BEGIN_SRC go
 package main
+
 import (
     "net"
     "log"
     "github.com/otaviof/gonrpe"
 )
 
-var (
-    listener   net.Listener
-    conn       net.Conn
-    buf        []byte = make([]byte, gonrpe.NRPE_PACKET_SIZE)
-    n          int
-    err        error
-    pkt        *gonrpe.NrpePacket
-    cmd        string
-    args       []string
-)
+func main() {
+    var (
+        listener   net.Listener
+        conn       net.Conn
+        buf        []byte
+        n          int
+        err        error
+        pkt        *gonrpe.NrpePacket
+        cmd        string
+        args       []string
+    )
 
-listener, _ = net.Listen("tcp", "0.0.0.0:5666")
+    listener, _ = net.Listen("tcp", "0.0.0.0:5666")
 
-for {
-    // accept a new connection on the network listener
-    conn, _ = ns.listener.Accept()
-    defer conn.Close()
+    for {
+        // accept a new connection on the network listener
+        conn, _ = ns.listener.Accept()
+        defer conn.Close()
 
-    // allocating the buffer using default NRPE packet size
-    buf = make([]byte, gonrpe.NRPE_PACKET_SIZE)
+        // allocating the buffer using default NRPE packet size
+        buf = make([]byte, gonrpe.NRPE_PACKET_SIZE)
 
-    // reading connection payload into "buf" slice of bytes
-    if n, err = conn.Read(buf); n == 0 || err != nil {
-        log.Println("Error on reading from connection:", err)
-        return
+        // reading connection payload into "buf" slice of bytes
+        if n, err = conn.Read(buf); n == 0 || err != nil {
+            log.Println("Error on reading from connection:", err)
+            continue
+        }
+
+        // transforming bytes into a NRPE packet object
+        pkt, _ = gonrpe.NewNrpePacket(buf, n)
+
+        // from a packet we can have the command and it's arguments
+        if cmd, args, err = pkt.ExtractCmdAndArgsFromBuffer(); err != nil {
+            panic("Error on parsing packet's buffer:", err)
+        }
+
+        log.Printf("Received (Command: '%s', Arguments: '%v')", cmd, args)
+
+        /* Do something else... */
     }
-
-    // transforming bytes into a NRPE packet object
-    pkt, _ = gonrpe.NewNrpePacket(buf, n)
-
-    // from a packet we can have the command and it's arguments
-    if cmd, args, err = pkt.ExtractCmdAndArgsFromBuffer(); err != nil {
-        panic("Error on parsing packet's buffer:", err)
-    }
-
-    log.Printf("Received (Command: '%s', Arguments: '%v')", cmd, args)
-
-    /* Do something else... */
 }
 #+END_SRC
 
