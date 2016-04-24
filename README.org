@@ -1,15 +1,15 @@
 * =gonrpe= Go Adapter for NRPE Protocol
 ** Abstract
 This is a simple Go implementation of NRPE protocol, where you can receive and
-respond `check_nrpe` calls, in other words, Nagios passive check calls using your
-own Go daemon.
+respond =check_nrpe= calls, in other words, Nagios passive check calls handled by
+your own Go based daemon.
 
 ** =CGo= Based
 By using =CGo= based implementation we can have the same data struct sent by
 =check_nrpe= on the Go side, and then transformed into a pure Go struct.
 
 ** Usage
-First of all have the source code on your development machine, by using:
+First of all have the source code on your workstatation, by using:
 
 #+BEGIN_SRC sh
 go get -v github.com/otaviof/gonrpe
