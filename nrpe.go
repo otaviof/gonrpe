@@ -117,6 +117,16 @@ import (
 	"unsafe"
 )
 
+type NrpePacket struct {
+	Version int16
+	Type    int16
+	CRC32   uint32
+	Buffer  string
+	cPacket *C.packet
+	cbytes  []byte
+	size    int
+}
+
 const (
 	NRPE_PACKET_VERSION_3      = 3
 	NRPE_PACKET_VERSION_2      = 2
@@ -135,23 +145,18 @@ const (
 	STATE_OK                   = 0
 )
 
-type NrpePacket struct {
-	Version int16
-	Type    int16
-	CRC32   uint32
-	Buffer  string
-	cPacket *C.packet
-	cbytes  []byte
-	size    int
-}
+var cIEEETable *C.ulong = C.generate_crc32_table()
 
+// Interface to handle different data structures but still responding to the
+// same information, required to handle NRPE queries.
 type NrpeResponser interface {
+	// name of the check, or nrpe command
 	GetName() string
+	// status, or the return code of the given check
 	GetStatus() int
+	// the actual check's output
 	GetStdout() []string
 }
-
-var cIEEETable *C.ulong = C.generate_crc32_table()
 
 // Wrapping C binary ending conversions to Go, inspired on:
 //   https://github.com/chamaken/cgolmnlo
